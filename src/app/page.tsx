@@ -1,16 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, useScroll, useTransform, type Variants } from 'framer-motion'
-import { ArrowRight, Github, Linkedin, Mail, Star, Code, Server, Palette, Briefcase, Upload, ExternalLink } from 'lucide-react'
+import { motion, useScroll, useTransform, type Variants, AnimatePresence } from 'framer-motion'
+import { ArrowRight, Github, Linkedin, Mail, Code, Server, Palette, ExternalLink, Menu, X } from 'lucide-react'
 
 export default function Portfolio() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   
-  // Parallax effect for hero section
+  // Parallax effect for hero section (disabled on mobile for performance)
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
 
@@ -36,6 +37,11 @@ export default function Portfolio() {
       window.removeEventListener('mousemove', handleMouseMove)
     }
   }, [])
+
+  // Close mobile menu when clicking a link
+  const handleNavClick = () => {
+    setIsMobileMenuOpen(false)
+  }
 
   // Animation variants
   const fadeInUp: Variants = {
@@ -85,11 +91,42 @@ export default function Portfolio() {
     }
   }
 
+  // Mobile menu variants
+  const mobileMenuVariants: Variants = {
+    closed: {
+      x: "100%",
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 40
+      }
+    },
+    open: {
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 40
+      }
+    }
+  }
+
+  const menuItemVariants: Variants = {
+    closed: { x: 50, opacity: 0 },
+    open: (i: number) => ({
+      x: 0,
+      opacity: 1,
+      transition: {
+        delay: i * 0.1
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden">
-      {/* Custom cursor follower */}
+      {/* Custom cursor follower - hidden on mobile */}
       <motion.div
-        className="cursor-follower"
+        className="cursor-follower hidden lg:block"
         animate={{
           x: mousePosition.x - (isHovering ? 20 : 10),
           y: mousePosition.y - (isHovering ? 20 : 10),
@@ -106,7 +143,7 @@ export default function Portfolio() {
       {/* Background decoration */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <motion.div 
-          className="absolute top-10 right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
+          className="absolute top-10 right-10 sm:right-20 w-64 h-64 sm:w-96 sm:h-96 bg-accent/5 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3]
@@ -118,7 +155,7 @@ export default function Portfolio() {
           }}
         />
         <motion.div 
-          className="absolute bottom-20 left-10 w-80 h-80 bg-accent/5 rounded-full blur-3xl"
+          className="absolute bottom-20 left-5 sm:left-10 w-56 h-56 sm:w-80 sm:h-80 bg-accent/5 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.2, 0.4, 0.2]
@@ -131,7 +168,7 @@ export default function Portfolio() {
           }}
         />
         <motion.div 
-          className="absolute top-1/2 left-1/2 w-72 h-72 bg-accent/3 rounded-full blur-3xl"
+          className="absolute top-1/2 left-1/2 w-48 h-48 sm:w-72 sm:h-72 bg-accent/3 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.1, 1],
             opacity: [0.1, 0.3, 0.1]
@@ -154,15 +191,17 @@ export default function Portfolio() {
           isScrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : 'bg-transparent'
         }`}
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <motion.div 
-            className="text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent"
+            className="text-lg sm:text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400 }}
           >
             Portfolio
           </motion.div>
-          <div className="flex gap-8 text-sm">
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex gap-6 lg:gap-8 text-sm">
             {['About', 'Skills', 'Experience', 'Projects', 'Contact'].map((item, idx) => (
               <motion.a
                 key={item}
@@ -177,15 +216,52 @@ export default function Portfolio() {
               </motion.a>
             ))}
           </div>
+
+          {/* Mobile Menu Button */}
+          <motion.button
+            className="md:hidden p-2 text-foreground"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </motion.button>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              className="fixed top-0 right-0 bottom-0 w-64 bg-card border-l border-border md:hidden"
+              variants={mobileMenuVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+            >
+              <div className="flex flex-col p-6 pt-20 gap-6">
+                {['About', 'Skills', 'Experience', 'Projects', 'Contact'].map((item, idx) => (
+                  <motion.a
+                    key={item}
+                    href={`#${item.toLowerCase()}`}
+                    className="text-lg hover:text-accent transition-colors"
+                    variants={menuItemVariants}
+                    custom={idx}
+                    onClick={handleNavClick}
+                  >
+                    {item}
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center pt-20 px-4 relative overflow-hidden">
+      <section className="min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div 
-            className="absolute -top-40 -right-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl"
+            className="absolute -top-20 sm:-top-40 -right-20 sm:-right-40 w-56 h-56 sm:w-80 sm:h-80 bg-accent/20 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.2, 0.4, 0.2]
@@ -197,7 +273,7 @@ export default function Portfolio() {
             }}
           />
           <motion.div 
-            className="absolute top-1/2 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl"
+            className="absolute top-1/2 -left-20 sm:-left-40 w-56 h-56 sm:w-80 sm:h-80 bg-accent/10 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.3, 1],
               opacity: [0.1, 0.3, 0.1]
@@ -212,11 +288,14 @@ export default function Portfolio() {
         </div>
 
         <motion.div 
-          className="relative z-10 max-w-3xl text-center"
-          style={{ y: heroY, opacity: heroOpacity }}
+          className="relative z-10 max-w-4xl text-center w-full"
+          style={{ 
+            y: typeof window !== 'undefined' && window.innerWidth > 768 ? heroY : 0,
+            opacity: typeof window !== 'undefined' && window.innerWidth > 768 ? heroOpacity : 1
+          }}
         >
           <motion.h1 
-            className="text-5xl sm:text-7xl font-bold mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 px-4"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -232,7 +311,7 @@ export default function Portfolio() {
           </motion.h1>
           
           <motion.p 
-            className="text-xl sm:text-2xl text-muted-foreground mb-8"
+            className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
@@ -241,14 +320,14 @@ export default function Portfolio() {
           </motion.p>
           
           <motion.div 
-            className="flex gap-4 justify-center flex-wrap"
+            className="flex gap-3 sm:gap-4 justify-center flex-wrap px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
           >
             <motion.a
               href="#experience"
-              className="px-8 py-3 bg-accent text-accent-foreground rounded-lg flex items-center gap-2 group overflow-hidden relative"
+              className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-accent text-accent-foreground rounded-lg flex items-center gap-2 group overflow-hidden relative"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -264,7 +343,7 @@ export default function Portfolio() {
             
             <motion.a
               href="#contact"
-              className="px-8 py-3 border border-accent text-accent rounded-lg flex items-center gap-2 group relative overflow-hidden"
+              className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base border border-accent text-accent rounded-lg flex items-center gap-2 group relative overflow-hidden"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -282,9 +361,9 @@ export default function Portfolio() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 px-4 max-w-5xl mx-auto">
+      <section id="about" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <motion.h2 
-          className="text-4xl font-bold mb-12 text-text-pretty"
+          className="text-3xl sm:text-4xl font-bold mb-8 sm:mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -294,15 +373,15 @@ export default function Portfolio() {
         </motion.h2>
         
         <motion.div 
-          className="p-8 bg-card border border-border rounded-lg"
+          className="p-6 sm:p-8 bg-card border border-border rounded-lg"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={scaleIn}
         >
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-8 sm:gap-12 items-center">
             <motion.div 
-              className="space-y-4 text-lg leading-relaxed text-muted-foreground"
+              className="space-y-4 text-base sm:text-lg leading-relaxed text-muted-foreground order-2 md:order-1"
               variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
@@ -320,7 +399,7 @@ export default function Portfolio() {
             </motion.div>
 
             <motion.div 
-              className="relative h-80 rounded-lg overflow-hidden border border-border/30 group"
+              className="relative h-64 sm:h-80 md:h-96 rounded-lg overflow-hidden border border-border/30 group order-1 md:order-2"
               variants={slideInRight}
               initial="hidden"
               whileInView="visible"
@@ -340,9 +419,9 @@ export default function Portfolio() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-4 max-w-5xl mx-auto">
+      <section id="skills" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <motion.h2 
-          className="text-4xl font-bold mb-12"
+          className="text-3xl sm:text-4xl font-bold mb-8 sm:mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -352,7 +431,7 @@ export default function Portfolio() {
         </motion.h2>
         
         <motion.div 
-          className="grid md:grid-cols-3 gap-6"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
@@ -379,7 +458,7 @@ export default function Portfolio() {
             return (
               <motion.div
                 key={idx}
-                className="p-6 bg-card border border-border rounded-lg group relative overflow-hidden"
+                className="p-4 sm:p-6 bg-card border border-border rounded-lg group relative overflow-hidden"
                 variants={fadeInUp}
                 whileHover={{ y: -5, borderColor: "oklch(0.5 0.2 263 / 0.5)" }}
                 transition={{ duration: 0.3 }}
@@ -396,23 +475,23 @@ export default function Portfolio() {
                       whileHover={{ rotate: 360, scale: 1.2 }}
                       transition={{ duration: 0.6 }}
                     >
-                      <IconComponent size={28} className="text-accent" />
+                      <IconComponent size={24} className="sm:w-7 sm:h-7 text-accent" />
                     </motion.div>
-                    <h3 className="text-xl font-semibold text-accent">{category.title}</h3>
+                    <h3 className="text-lg sm:text-xl font-semibold text-accent">{category.title}</h3>
                   </div>
                   
                   <ul className="space-y-2">
                     {category.skills.map((skill, i) => (
                       <motion.li 
                         key={i} 
-                        className="text-muted-foreground flex items-center gap-2"
+                        className="text-sm sm:text-base text-muted-foreground flex items-center gap-2"
                         initial={{ opacity: 0, x: -10 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
                         viewport={{ once: true }}
                       >
                         <motion.span 
-                          className="w-1.5 h-1.5 bg-accent/50 rounded-full"
+                          className="w-1.5 h-1.5 bg-accent/50 rounded-full flex-shrink-0"
                           whileHover={{ scale: 2 }}
                         />
                         {skill}
@@ -427,9 +506,9 @@ export default function Portfolio() {
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="py-20 px-4 max-w-5xl mx-auto">
+      <section id="experience" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <motion.h2 
-          className="text-4xl font-bold mb-12"
+          className="text-3xl sm:text-4xl font-bold mb-8 sm:mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -439,7 +518,7 @@ export default function Portfolio() {
         </motion.h2>
         
         <motion.div 
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
@@ -463,7 +542,7 @@ export default function Portfolio() {
           ].map((exp, idx) => (
             <motion.div
               key={idx}
-              className="group p-6 bg-card border border-border rounded-lg relative overflow-hidden"
+              className="group p-4 sm:p-6 bg-card border border-border rounded-lg relative overflow-hidden"
               variants={fadeInUp}
               whileHover={{ scale: 1.02, borderColor: "oklch(0.5 0.2 263 / 0.5)" }}
               transition={{ duration: 0.3 }}
@@ -475,22 +554,22 @@ export default function Portfolio() {
                 transition={{ duration: 0.3 }}
               />
               
-              <div className="flex items-start gap-6 relative z-10">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 relative z-10">
                 <motion.div 
-                  className="relative"
+                  className="relative flex-shrink-0"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
                   <img
                     src={exp.logo || "/placeholder.svg"}
                     alt={exp.company}
-                    className="w-20 h-20 rounded-lg object-cover border border-border/50"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover border border-border/50"
                   />
                 </motion.div>
                 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <motion.h3 
-                    className="text-2xl font-bold group-hover:text-accent transition-colors"
+                    className="text-xl sm:text-2xl font-bold group-hover:text-accent transition-colors break-words"
                     initial={{ x: -20, opacity: 0 }}
                     whileInView={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
@@ -498,10 +577,10 @@ export default function Portfolio() {
                   >
                     {exp.company}
                   </motion.h3>
-                  <p className="text-accent text-lg font-semibold mb-1">{exp.role}</p>
-                  <p className="text-muted-foreground text-sm mb-3">{exp.period}</p>
+                  <p className="text-accent text-base sm:text-lg font-semibold mb-1">{exp.role}</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm mb-3">{exp.period}</p>
                   <motion.p 
-                    className="text-muted-foreground leading-relaxed"
+                    className="text-sm sm:text-base text-muted-foreground leading-relaxed"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
@@ -517,9 +596,9 @@ export default function Portfolio() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-20 px-4 max-w-5xl mx-auto">
+      <section id="projects" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <motion.h2 
-          className="text-4xl font-bold mb-12"
+          className="text-3xl sm:text-4xl font-bold mb-8 sm:mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -529,7 +608,7 @@ export default function Portfolio() {
         </motion.h2>
         
         <motion.div 
-          className="grid md:grid-cols-2 gap-8"
+          className="grid sm:grid-cols-2 gap-6 sm:gap-8"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
@@ -544,7 +623,7 @@ export default function Portfolio() {
               link: 'https://github.com/RED1EYE/JARVIS-Voice-Activated-AI-Assistant',
             },
             {
-              title: 'Collaboratiove Canvas',
+              title: 'Collaborative Canvas',
               description:
                 'A multi-user collaborative drawing application built with vanilla JavaScript, HTML5 Canvas API, and WebSocket for real-time synchronization.',
               tags: ['Canvas API', 'Vanilla JavaScript', 'WebSocket', 'Node.js','Express.js'],
@@ -579,9 +658,9 @@ export default function Portfolio() {
                 transition={{ duration: 0.4 }}
               />
               
-              <div className="relative p-6 z-10">
+              <div className="relative p-4 sm:p-6 z-10">
                 <motion.h3 
-                  className="text-2xl font-bold mb-3 group-hover:text-accent transition-colors"
+                  className="text-xl sm:text-2xl font-bold mb-3 group-hover:text-accent transition-colors"
                   initial={{ y: 10, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
@@ -591,7 +670,7 @@ export default function Portfolio() {
                 </motion.h3>
                 
                 <motion.p 
-                  className="text-muted-foreground mb-6"
+                  className="text-sm sm:text-base text-muted-foreground mb-6"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -610,7 +689,7 @@ export default function Portfolio() {
                   {project.tags.map((tag, i) => (
                     <motion.span
                       key={i}
-                      className="px-3 py-1 bg-secondary text-secondary-foreground rounded-full text-sm"
+                      className="px-2.5 py-1 bg-secondary text-secondary-foreground rounded-full text-xs sm:text-sm"
                       variants={{
                         hidden: { scale: 0, opacity: 0 },
                         visible: { scale: 1, opacity: 1 }
@@ -624,7 +703,9 @@ export default function Portfolio() {
                 
                 <motion.a
                   href={project.link}
-                  className="inline-flex items-center gap-2 text-accent group/link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm sm:text-base text-accent group/link"
                   whileHover={{ x: 5 }}
                   transition={{ duration: 0.2 }}
                 >
@@ -638,23 +719,23 @@ export default function Portfolio() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 max-w-5xl mx-auto">
+      <section id="contact" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <motion.div 
-          className="p-8 bg-card border border-border rounded-lg mb-12"
+          className="p-6 sm:p-8 bg-card border border-border rounded-lg mb-8 sm:mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={scaleIn}
         >
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             <motion.h2 
-              className="text-4xl font-bold mb-4"
+              className="text-3xl sm:text-4xl font-bold mb-4"
               variants={fadeInUp}
             >
               Get In Touch
             </motion.h2>
             <motion.p 
-              className="text-muted-foreground text-lg"
+              className="text-muted-foreground text-base sm:text-lg"
               variants={fadeInUp}
             >
               I'd love to hear from you. Let's create something amazing together.
@@ -662,7 +743,7 @@ export default function Portfolio() {
           </div>
 
           <motion.div 
-            className="grid md:grid-cols-3 gap-8"
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8"
             variants={staggerContainer}
           >
             {[
@@ -692,7 +773,7 @@ export default function Portfolio() {
                   href={contact.href}
                   target={contact.href.startsWith('http') ? '_blank' : undefined}
                   rel={contact.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className="p-6 bg-card border border-border rounded-lg text-center group relative overflow-hidden"
+                  className="p-4 sm:p-6 bg-card border border-border rounded-lg text-center group relative overflow-hidden"
                   variants={fadeInUp}
                   whileHover={{ y: -5, borderColor: "oklch(0.5 0.2 263 / 0.5)" }}
                   transition={{ duration: 0.3 }}
@@ -709,11 +790,11 @@ export default function Portfolio() {
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <IconComponent size={32} className="mx-auto mb-4 text-accent" />
+                    <IconComponent size={28} className="sm:w-8 sm:h-8 mx-auto mb-4 text-accent" />
                   </motion.div>
                   
-                  <h3 className="font-semibold mb-2 relative z-10">{contact.title}</h3>
-                  <p className="text-muted-foreground relative z-10">{contact.value}</p>
+                  <h3 className="font-semibold mb-2 relative z-10 text-sm sm:text-base">{contact.title}</h3>
+                  <p className="text-muted-foreground relative z-10 text-xs sm:text-sm break-all">{contact.value}</p>
                 </motion.a>
               )
             })}
@@ -721,7 +802,7 @@ export default function Portfolio() {
         </motion.div>
 
         <motion.div 
-          className="max-w-2xl mx-auto flex gap-4 justify-center"
+          className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -729,7 +810,7 @@ export default function Portfolio() {
         >
           <motion.a
             href="mailto:faizanalifas@gmail.com"
-            className="px-8 py-3 bg-accent text-accent-foreground rounded-lg font-semibold relative overflow-hidden group"
+            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-accent text-accent-foreground rounded-lg font-semibold relative overflow-hidden group text-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -744,8 +825,9 @@ export default function Portfolio() {
           
           <motion.a
             href="https://drive.google.com/file/d/18MVCE8evy-FVyMmiwkYADKrfkbNFDW_Y/view?usp=sharing"
-            download
-            className="px-8 py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold border border-border relative overflow-hidden group"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-secondary text-secondary-foreground rounded-lg font-semibold border border-border relative overflow-hidden group text-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -762,13 +844,13 @@ export default function Portfolio() {
 
       {/* Footer */}
       <motion.footer 
-        className="border-t border-border py-8 px-4"
+        className="border-t border-border py-6 sm:py-8 px-4"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <div className="max-w-5xl mx-auto text-center text-muted-foreground">
+        <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm sm:text-base">
           <p>© 2024 Faizan. All rights reserved.</p>
         </div>
       </motion.footer>
