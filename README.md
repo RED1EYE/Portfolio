@@ -2,6 +2,8 @@
 
 A modern, interactive portfolio website showcasing technical projects and skills with stunning animations, custom cursor effects, and a sleek dark theme.
 
+🔗 **Live Demo:** [https://portfoliofaizanalisayed.vercel.app/](https://portfoliofaizanalisayed.vercel.app/)
+
 ## 🌟 Overview
 
 This portfolio website is built with Next.js and features advanced Framer Motion animations, creating an engaging and memorable user experience. The design emphasizes a clean, professional aesthetic with a dark theme and purple-blue accent colors.
