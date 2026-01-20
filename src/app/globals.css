@@ -123,6 +123,44 @@
   body {
     @apply bg-background text-foreground;
     cursor: none; /* Hide default cursor for custom cursor effect */
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* Background Pattern Layer */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/geometric-pattern.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.15;
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  /* Optional: Add gradient overlay for better text readability */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgba(138, 43, 226, 0.05) 0%,
+      rgba(0, 0, 255, 0.03) 50%,
+      transparent 100%
+    );
+    z-index: -1;
+    pointer-events: none;
   }
 
   /* Hide cursor on all interactive elements */
@@ -498,5 +536,10 @@ body:has([role="button"]:hover) .cursor-follower {
 
   nav {
     position: relative !important;
+  }
+  
+  body::before,
+  body::after {
+    display: none;
   }
 }
