@@ -408,7 +408,7 @@ export default function Portfolio() {
               transition={{ duration: 0.3 }}
             >
               <img 
-                src="https://i.ibb.co/tpqjpFHz/Photo-official.jpg" 
+                src="https://i.ibb.co/wNBBVDdV/Photo.jpg" 
                 alt="Profile description" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
