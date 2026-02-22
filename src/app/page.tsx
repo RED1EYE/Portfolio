@@ -530,14 +530,14 @@ export default function Portfolio() {
               role: 'Project Intern',
               period: 'Jul 2025 - Aug 2025',
               description: ' Developed a Hostel Room Allotment System that automated room allocation for over 1000+ students while integrating real-time tracking and admin dashboard, improving hostel occupancy visibility and decision-making.',
-              logo: 'https://media.licdn.com/dms/image/v2/D4D0BAQH8fxapTcXNdg/company-logo_200_200/company-logo_200_200/0/1722665741506?e=1770249600&v=beta&t=8k1knks-kCVMO3JocKVQ8jemcIv62iIY2a_XpzkcLgY',
+              logo: 'https://i.ibb.co/TBmHKxJS/IJA.png',
             },
             {
               company: 'IAESTE INDIA',
               role: 'Head of Administration',
               period: 'Jun 2024 - Jun 2025',
               description: 'Managed the global internship cycle for 500+ applicants, releasing 800+ offers and placing 110 interns worldwide achieving a 22% conversion rate while overseeing 7 local committees.',
-              logo: 'https://media.licdn.com/dms/image/v2/C510BAQGlzNKvG4F4qg/company-logo_200_200/company-logo_200_200/0/1630630748730/iaeste_india_logo?e=1770249600&v=beta&t=bP-XBUdCtOHWqD1G2ZCI_540ixTfEI5T_QiC4SKkcNo',
+              logo: 'https://i.ibb.co/23yL0hKq/Iaeste-india.jpg',
             },
           ].map((exp, idx) => (
             <motion.div
@@ -824,7 +824,7 @@ export default function Portfolio() {
           </motion.a>
           
           <motion.a
-            href="https://drive.google.com/file/d/18MVCE8evy-FVyMmiwkYADKrfkbNFDW_Y/view?usp=sharing"
+            href="https://drive.google.com/file/d/19N62K6K7_knZ8lQ13gu1X6FjDQSD9Fv7/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-secondary text-secondary-foreground rounded-lg font-semibold border border-border relative overflow-hidden group text-center"
