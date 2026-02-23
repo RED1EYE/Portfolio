@@ -824,7 +824,7 @@ export default function Portfolio() {
           </motion.a>
           
           <motion.a
-            href="https://drive.google.com/file/d/19N62K6K7_knZ8lQ13gu1X6FjDQSD9Fv7/view?usp=sharing"
+            href="https://drive.google.com/file/d/1v7_SjCYBY0qR3vuvCJje4Az9Voyv-iBs/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-secondary text-secondary-foreground rounded-lg font-semibold border border-border relative overflow-hidden group text-center"
